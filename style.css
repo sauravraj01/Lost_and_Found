@@ -1,0 +1,166 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+
+    background: #eef2f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+}
+
+.container {
+
+    background: white;
+    width: 420px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .2);
+
+}
+
+h1 {
+
+    text-align: center;
+    color: #003366;
+    font-size: 24px;
+
+}
+
+h2 {
+
+    text-align: center;
+    margin: 15px;
+    color: #0077cc;
+
+}
+
+label {
+
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+
+}
+
+input,
+select {
+
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid gray;
+
+}
+
+button {
+
+    width: 100%;
+    padding: 12px;
+    margin-top: 25px;
+    border: none;
+    background: #003366;
+    color: white;
+    font-size: 17px;
+    border-radius: 8px;
+    cursor: pointer;
+
+}
+
+button:hover {
+
+    background: #0055aa;
+
+}
+
+#message {
+
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+
+}
+
+.profile {
+
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+
+}
+
+.profile p {
+
+    margin: 10px 0;
+
+}
+
+.card-container {
+
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 20px;
+
+}
+
+.card {
+
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    text-align: center;
+
+}
+
+.card h3 {
+
+    color: #003366;
+
+}
+
+.card p {
+
+    margin: 15px 0;
+
+}
+
+.logout {
+
+    margin-top: 30px;
+    background: red;
+
+}
+
+.logout:hover {
+
+    background: darkred;
+
+}
+
+textarea {
+
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid gray;
+    border-radius: 6px;
+    resize: none;
+
+}
+
+input[type=file] {
+
+    margin-top: 10px;
+
+}

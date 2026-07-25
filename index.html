@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JIIT Lost & Found Portal</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Jaypee Institute of Information Technology</h1>
+
+        <h2>Lost & Found Portal</h2>
+
+        <form id="loginForm">
+
+            <label>Select Campus</label>
+
+            <select id="campus" required>
+                <option value="">Choose Campus</option>
+                <option value="Sector-62">Sector-62</option>
+                <option value="Sector-128">Sector-128</option>
+            </select>
+
+            <label>Student Name</label>
+            <input type="text" id="name" required>
+
+            <label>Enrollment Number</label>
+            <input type="text" id="enroll" required>
+
+            <label>Contact Number</label>
+            <input type="text" id="contact" required>
+
+            <label>Password</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">Login</button>
+
+        </form>
+
+        <p id="message"></p>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
