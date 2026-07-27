@@ -1,54 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindIt | Login</title>
 
-    <title>JIIT Lost & Found Portal</title>
-
-    <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="indexcs.css">
 </head>
-
 <body>
 
-    <div class="container">
-        <h1>Jaypee Institute of Information Technology</h1>
+    <!-- ==================== Navbar ==================== -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <h1>Find<span class="it">IT</span></h1>
+        </div>
 
-        <h2>Lost & Found Portal</h2>
 
-        <form id="loginForm">
+    </nav>
 
-            <label>Select Campus</label>
 
-            <select id="campus" required>
-                <option value="">Choose Campus</option>
-                <option value="Sector-62">Sector-62</option>
-                <option value="Sector-128">Sector-128</option>
-            </select>
+    <!-- ==================== Main Container ==================== -->
+    <main class="container">
 
-            <label>Student Name</label>
-            <input type="text" id="name" required>
+        <!-- ========== Left Section ========== -->
+        <section class="left-section">
 
-            <label>Enrollment Number</label>
-            <input type="text" id="enroll" required>
+            <!-- Logo + Heading -->
+            <div class="left-top">
+                <h1 id="head1">Lost Something on Campus?</h1>
 
-            <label>Contact Number</label>
-            <input type="text" id="contact" required>
+                <p id="subhead1">
+                    Sign in to report missing items, browse recent findings,<br><br>
+                    and reconnect with your belongings through the campus community.
+                </p>
 
-            <label>Password</label>
-            <input type="password" id="password" required>
+            </div>
 
-            <button type="submit">Login</button>
+            <!-- Login Form -->
+            <div class="left-bottom">
 
-        </form>
+                <form class="login-form">
 
-        <p id="message"></p>
+                    <div class="input-group">
+                        <label>Email</label><br>
+                        <input class="input" type="email"><br><br>
 
-    </div>
-    <script src="script.js"></script>
+                        <label>Contact No.</label><br>
+                        <input class="input" type="number">
+                    </div>
+
+                    <div class="input-group">
+
+                    </div>
+
+                    <button class="btn" id="submitbtn" type="submit">
+                        Submit
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========== Right Section ========== -->
+        <section class="right-section">
+            <img src="LnF-Illustration.png" height="700" width="500">
+        </section>
+
+    </main>
+
+
+    <!-- ==================== Footer ==================== -->
+    <footer class="footer">
+        <hr>
+        Made with <i></i> for JIITians !!
+    </footer>
+
+    <script href="indexjs.js"></script>
 </body>
-
 </html>
