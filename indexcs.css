@@ -51,12 +51,14 @@ label{
     margin: 10px;
 }
 .input{
-    background: gray;
+    background: #2e2d2d;
     border-radius: 6px;
     padding: 6px;
     width: 200px;
     margin: 10px;
+    color: white;
 }
+
 
 .btn{
     width:90px;
