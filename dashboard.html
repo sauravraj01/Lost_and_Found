@@ -5,64 +5,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>Lost & Found Portal</h1>
-        <h2>Student Dashboard</h2>
+    <link rel="stylesheet" href="dashboard.css">
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
 
-        <div class="profile">
-            <label><strong>Name :</strong> <span id="studentName"></span></label>
-            <input type="text" id="name">
+    
+    <!-- ==================== Navbar ==================== -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <h1>Find<span class="it">IT</span></h1>
+        </div>
+    </nav>
 
-            <label><strong>Campus :</strong> <span id="studentCampus"></span></label>
-            <input type="text">
+    <h1>Welcome !! </h1>
+    <h3>xyzzz </h3>
 
-            <label><strong>Contact :</strong> <span id="studentContact"></span></label>
-            <input type="text" id="contact">
+    <button class="lost" id="lost">
+        Lost Something ??
+    </button>
+    
+    <button class="found" id="found">
+        Found Something !!
+    </button>
 
-            <label><strong>Enrollment :</strong> <span id="studentEnrollment"></span></label>
-            <input type="text" id="enroll">
+    <div class="modal1" id="modal1">
+        
+    <div class="report">
+        
+
+        <div class="report-content">
+        <label>Name</label><br>
+        <input id="names" type="text"><br>
+
+        <label>Item</label><br>
+        <input id="item" type="text"><br>
+
+        <label>Upload image</label><br>
+        <input type="file" id="image" accept="image/*"><br>
+
+        <img id="preview" width="250">
+
+        <button class="submit" id="submit">Submit</button>
 
         </div>
-
-        <div class="card-container">
-
-            <div class="card">
-
-                <h3>Lost Item</h3>
-
-                <p>Report an item you have lost.</p>
-
-                <button onclick="window.location='lost.html'">
-                    Report Lost Item
-                </button>
-
-            </div>
-
-            <div class="card">
-
-                <h3>Found Item</h3>
-
-                <p>Report an item you have found.</p>
-
-                <button onclick="window.location='found.html'">
-                    Report Found Item
-                </button>
-
-            </div>
-
+        <div class="closemodal">
+            <button id="close">✖</button>
         </div>
-
-        <button class="logout" onclick="logout()">
-            Logout
-        </button>
-
+    </div>
     </div>
 
-    <script src="script.js"></script>
+
+    <div id="reportsContainer"></div>
+
+    <script src="dashboard.js"></script>
 
 </body>
 

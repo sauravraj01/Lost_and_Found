@@ -67,3 +67,9 @@ label{
     margin:15px;
     border-radius: 10px;
 }
+
+svg {
+    width: 20px;
+    height: 20px;
+    stroke: red;
+}
