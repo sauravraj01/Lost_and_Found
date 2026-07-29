@@ -42,6 +42,10 @@
         <label>Item</label><br>
         <input id="item" type="text"><br>
 
+        
+        <label>Description</label><br>
+        <textarea id="lostDescription"></textarea><br>
+
         <label>Upload image</label><br>
         <input type="file" id="image" accept="image/*"><br>
 
@@ -57,7 +61,50 @@
     </div>
 
 
+    <!-- ================= Found Modal ================= -->
+
+    <div class="modal1" id="foundModal">
+        
+        <div class="report">
+
+            <div class="report-content">
+
+                <label>Name</label><br>
+                <input id="foundNames" type="text"><br>
+
+                <label>Item</label><br>
+                <input id="foundItem" type="text"><br>
+
+                <label>Description</label><br>
+                <textarea id="foundDescription"></textarea><br>
+
+                <label>Upload image</label><br>
+                <input type="file" id="foundImage" accept="image/*"><br>
+
+                <img id="foundPreview" width="250">
+
+                <button class="submit" id="foundSubmit">
+                    Submit
+                </button>
+
+            </div>
+
+
+            <div class="closemodal">
+                <button id="foundClose">
+                    ✖
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <h2>LOST ITEMS </h2>
     <div id="reportsContainer"></div>
+
+    <h2>FOUND ITEMS</h2>
+    <div id="foundContainer"></div>
 
     <script src="dashboard.js"></script>
 
