@@ -4,89 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FindIt | Login</title>
-
-  
+    <link rel="stylesheet" href="indexcs.css">
 </head>
 <body>
-    <link rel="stylesheet" href="indexcs.css">
-    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
-    
-    
-    <!-- ==================== Navbar ==================== -->
     <nav class="navbar">
-        <div class="nav-left">
+        <div class="nav-brand">
             <h1>Find<span class="it">IT</span></h1>
         </div>
-
-
+        <p class="nav-tagline">Campus Lost &amp; Found</p>
     </nav>
 
-
-    <!-- ==================== Main Container ==================== -->
     <main class="container">
-
-        <!-- ========== Left Section ========== -->
         <section class="left-section">
-
-            <!-- Logo + Heading -->
             <div class="left-top">
                 <h1 id="head1">Lost Something on Campus?</h1>
-
                 <p id="subhead1">
-                    Sign in to report missing items, browse recent findings,<br><br>
+                    Sign in to report missing items, browse recent findings,
                     and reconnect with your belongings through the campus community.
                 </p>
-
             </div>
 
-            <!-- Login Form -->
             <div class="left-bottom">
-
+                <h2 class="form-title">Sign in</h2>
                 <form class="login-form">
-
                     <div class="input-group">
-                        <label>Email</label><br>
-                        <input class="input" id="maillogin" type="email"><br><br>
-
-                        <label>Contact No.</label><br>
-                        <input class="input" id="contactlogin" type="number">
+                        <label for="maillogin">Email</label>
+                        <input class="input" id="maillogin" type="email" placeholder="name@mail.jiit.ac.in">
                     </div>
 
                     <div class="input-group">
-
+                        <label for="contactlogin">Contact No.</label>
+                        <input class="input" id="contactlogin" type="tel" placeholder="10-digit number" maxlength="10">
                     </div>
 
-                    <button class="btn" id="submitbtn" type="button">
-                        Sign in
-                    </button>
-
+                    <button class="btn" id="submitbtn" type="button">Sign in</button>
                 </form>
-
             </div>
-            
-
         </section>
 
-
-        <!-- ========== Right Section ========== -->
         <section class="right-section">
-            <img src="LnF-Illustration.png" height="700" width="500">
+            <img src="LnF-Illustration.png" alt="Lost and found illustration">
         </section>
-
     </main>
 
-
-    <!-- ==================== Footer ==================== -->
     <footer class="footer">
-        <hr>
-        Made with <i data-lucide="heart"></i> for JIITians !!
+        Made with ♥ for JIITians
     </footer>
 
     <script src="indexjs.js"></script>
-
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        lucide.createIcons();
-    </script>
 </body>
 </html>

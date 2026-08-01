@@ -1,28 +1,105 @@
-const lost = document.getElementById("lost");
-const modal = document.getElementById("modal1");
+// ==================== Auth / Navbar ====================
 
-lost.addEventListener("click", function () {
-    modal.style.display = "flex";
+const studentName = localStorage.getItem("studentName") || "Guest";
+const userEmail = localStorage.getItem("userEmail") || "";
+const welcomeEl = document.getElementById("welcomeName");
+const navUserEl = document.getElementById("navUser");
+const profileAvatar = document.getElementById("profileAvatar");
+const profileEmail = document.getElementById("profileEmail");
+
+if (welcomeEl) welcomeEl.textContent = studentName;
+if (navUserEl) navUserEl.textContent = studentName;
+if (profileAvatar) profileAvatar.textContent = studentName.charAt(0).toUpperCase();
+if (profileEmail) profileEmail.textContent = userEmail || "Not signed in";
+
+const profileMenu = document.querySelector(".profile-menu");
+const profileBtn = document.getElementById("profileBtn");
+const profileDropdown = document.getElementById("profileDropdown");
+
+profileBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const isOpen = profileMenu.classList.toggle("open");
+    profileDropdown.hidden = !isOpen;
+    profileBtn.setAttribute("aria-expanded", String(isOpen));
 });
 
-const found = document.getElementById("found");
-const foundModal = document.getElementById("foundModal");
-
-found.addEventListener("click", function () {
-    foundModal.style.display = "flex";
+document.addEventListener("click", function (e) {
+    if (!profileMenu.contains(e.target)) {
+        profileMenu.classList.remove("open");
+        profileDropdown.hidden = true;
+        profileBtn.setAttribute("aria-expanded", "false");
+    }
 });
 
-const closeBtn = document.getElementById("close");
-closeBtn.addEventListener("click", function () {
-    modal.style.display = "none";
+document.getElementById("logoutBtn").addEventListener("click", function () {
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userContact");
+    localStorage.removeItem("studentName");
+    window.location.href = "index.html";
 });
 
-const closeBtnfound = document.getElementById("foundClose");
-closeBtnfound.addEventListener("click", function () {
-    foundModal.style.display = "none";
+// ==================== Theme toggle ====================
+
+const themeToggle = document.getElementById("themeToggle");
+const savedTheme = localStorage.getItem("theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+themeToggle.addEventListener("click", function () {
+    const current = document.documentElement.getAttribute("data-theme") || "dark";
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
 });
 
-// ============ helper: file -> base64 ============
+// ==================== Report modal (Lost / Found tabs) ====================
+
+const reportModal = document.getElementById("reportModal");
+const reportBtn = document.getElementById("reportBtn");
+const tabLost = document.getElementById("tabLost");
+const tabFound = document.getElementById("tabFound");
+const lostPanel = document.getElementById("lostPanel");
+const foundPanel = document.getElementById("foundPanel");
+
+function openReportModal(tab) {
+    reportModal.style.display = "flex";
+    showReportTab(tab || "lost");
+}
+
+function closeReportModal() {
+    reportModal.style.display = "none";
+}
+
+function showReportTab(tab) {
+    const isLost = tab === "lost";
+
+    tabLost.classList.toggle("active", isLost);
+    tabFound.classList.toggle("active", !isLost);
+    tabLost.setAttribute("aria-selected", String(isLost));
+    tabFound.setAttribute("aria-selected", String(!isLost));
+
+    lostPanel.hidden = !isLost;
+    foundPanel.hidden = isLost;
+}
+
+reportBtn.addEventListener("click", function () {
+    openReportModal("lost");
+});
+
+tabLost.addEventListener("click", function () {
+    showReportTab("lost");
+});
+
+tabFound.addEventListener("click", function () {
+    showReportTab("found");
+});
+
+document.getElementById("reportClose").addEventListener("click", closeReportModal);
+
+reportModal.addEventListener("click", function (e) {
+    if (e.target === reportModal) closeReportModal();
+});
+// ==================== Helpers ====================
+
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -32,13 +109,10 @@ function fileToBase64(file) {
     });
 }
 
-// ============ helper: does a lost/found pair match ============
-
-// common filler words that shouldn't count as a "match" by themselves
 const STOPWORDS = new Set([
     "a", "an", "the", "is", "was", "were", "in", "on", "at", "near",
     "found", "lost", "my", "i", "it", "this", "that", "with", "and",
-    "of", "to", "for", "have", "has", "had", "some", "there", "near",
+    "of", "to", "for", "have", "has", "had", "some", "there",
     "please", "help", "item", "items"
 ]);
 
@@ -61,22 +135,18 @@ function isMatch(lostReport, foundReport) {
 
     if (lostWords.size === 0 || foundWords.size === 0) return false;
 
-    // require at least 3 common meaningful keywords to count as a match
     const MIN_COMMON_KEYWORDS = 3;
     let commonCount = 0;
 
     for (const word of foundWords) {
         if (lostWords.has(word)) {
             commonCount++;
-            if (commonCount >= MIN_COMMON_KEYWORDS) {
-                return true;
-            }
+            if (commonCount >= MIN_COMMON_KEYWORDS) return true;
         }
     }
     return false;
 }
 
-// sets possibleMatch on BOTH the lost report and the found report
 function linkMatch(lostReport, foundReport) {
     lostReport.possibleMatch = {
         id: foundReport.id,
@@ -95,11 +165,63 @@ function linkMatch(lostReport, foundReport) {
     };
 }
 
-// ======================LOST ITEM ============================//
+// ==================== Search / Sort / Filter state ====================
+
+const searchInput = document.getElementById("searchInput");
+const filterGroup = document.getElementById("filterGroup");
+const sortSelect = document.getElementById("sortSelect");
+
+let activeFilter = "all";
+let activeSort = "newest";
+
+searchInput.addEventListener("input", refreshBoard);
+
+filterGroup.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+
+    activeFilter = btn.dataset.filter;
+    filterGroup.querySelectorAll(".chip").forEach(function (chip) {
+        chip.classList.toggle("active", chip === btn);
+    });
+    refreshBoard();
+});
+
+sortSelect.addEventListener("change", function () {
+    activeSort = sortSelect.value;
+    refreshBoard();
+});
+
+function matchesSearch(textParts, query) {
+    if (!query) return true;
+    const haystack = textParts.join(" ").toLowerCase();
+    return haystack.includes(query);
+}
+
+function sortReports(list, getName, getId) {
+    const mode = activeSort;
+    const sorted = list.slice();
+
+    sorted.sort(function (a, b) {
+        if (mode === "newest") return getId(b) - getId(a);
+        if (mode === "oldest") return getId(a) - getId(b);
+        if (mode === "az") return getName(a).localeCompare(getName(b));
+        if (mode === "za") return getName(b).localeCompare(getName(a));
+        return 0;
+    });
+
+    return sorted;
+}
+
+function refreshBoard() {
+    renderLostReports();
+    renderFoundReports();
+}
+
+// ====================== LOST ITEM ============================
 
 const imageInput = document.getElementById("image");
 const preview = document.getElementById("preview");
-
 let currentLostImageBase64 = null;
 
 imageInput.addEventListener("change", async function () {
@@ -107,11 +229,11 @@ imageInput.addEventListener("change", async function () {
     if (file) {
         currentLostImageBase64 = await fileToBase64(file);
         preview.src = currentLostImageBase64;
+        preview.hidden = false;
     }
 });
 
-const submitform = document.getElementById("submit");
-submitform.addEventListener("click", function () {
+document.getElementById("submit").addEventListener("click", function () {
     const names = document.getElementById("names").value.trim();
     const lostDescription = document.getElementById("lostDescription").value.trim();
     const item = document.getElementById("item").value.trim();
@@ -153,19 +275,17 @@ submitform.addEventListener("click", function () {
     document.getElementById("lostDescription").value = "";
     imageInput.value = "";
     preview.src = "";
+    preview.hidden = true;
     currentLostImageBase64 = null;
 
-    modal.style.display = "none";
-
-    renderLostReports();
-    renderFoundReports();
+    closeReportModal();
+    refreshBoard();
 });
 
 // ================= FOUND ITEM =================
 
 const foundImageInput = document.getElementById("foundImage");
 const foundPreview = document.getElementById("foundPreview");
-
 let currentFoundImageBase64 = null;
 
 foundImageInput.addEventListener("change", async function () {
@@ -173,12 +293,11 @@ foundImageInput.addEventListener("change", async function () {
     if (file) {
         currentFoundImageBase64 = await fileToBase64(file);
         foundPreview.src = currentFoundImageBase64;
+        foundPreview.hidden = false;
     }
 });
 
-const foundSubmit = document.getElementById("foundSubmit");
-
-foundSubmit.addEventListener("click", function () {
+document.getElementById("foundSubmit").addEventListener("click", function () {
     const foundNames = document.getElementById("foundNames").value.trim();
     const foundItem = document.getElementById("foundItem").value.trim();
     const foundDescription = document.getElementById("foundDescription").value.trim();
@@ -198,8 +317,6 @@ foundSubmit.addEventListener("click", function () {
     };
 
     let foundReports = JSON.parse(localStorage.getItem("foundReports")) || [];
-
-    // ---- check against existing lost reports for a match ----
     let reports = JSON.parse(localStorage.getItem("reports")) || [];
     let lostChanged = false;
 
@@ -217,28 +334,58 @@ foundSubmit.addEventListener("click", function () {
         localStorage.setItem("reports", JSON.stringify(reports));
     }
 
-    // clear form
     document.getElementById("foundNames").value = "";
     document.getElementById("foundItem").value = "";
     document.getElementById("foundDescription").value = "";
     foundImageInput.value = "";
     foundPreview.src = "";
+    foundPreview.hidden = true;
     currentFoundImageBase64 = null;
 
-    foundModal.style.display = "none";
-
-    renderFoundReports();
-    renderLostReports();
+    closeReportModal();
+    refreshBoard();
 });
 
 // ================= RENDER =================
 
 const container = document.getElementById("reportsContainer");
 const foundContainer = document.getElementById("foundContainer");
+const lostSection = document.getElementById("lostSection");
+const foundSection = document.getElementById("foundSection");
+const lostCountEl = document.getElementById("lostCount");
+const foundCountEl = document.getElementById("foundCount");
+const lostEmpty = document.getElementById("lostEmpty");
+const foundEmpty = document.getElementById("foundEmpty");
 
 function renderLostReports() {
-    const reports = JSON.parse(localStorage.getItem("reports")) || [];
+    const query = searchInput.value.trim().toLowerCase();
+    const filter = activeFilter;
+    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+    // Section visibility from filter
+    if (filter === "found") {
+        lostSection.style.display = "none";
+        return;
+    }
+    lostSection.style.display = "";
+
+    reports = reports.filter(function (report) {
+        if (filter === "matched" && !report.possibleMatch) return false;
+        return matchesSearch(
+            [report.item, report.names, report.lostDescription],
+            query
+        );
+    });
+
+    reports = sortReports(
+        reports,
+        function (r) { return r.item || ""; },
+        function (r) { return r.id || 0; }
+    );
+
     container.innerHTML = "";
+    lostCountEl.textContent = reports.length;
+    lostEmpty.hidden = reports.length > 0;
 
     reports.forEach(function (report) {
         const card = document.createElement("div");
@@ -249,18 +396,18 @@ function renderLostReports() {
             matchHtml = `
                 <div class="matchBox">
                     <strong>Possible Match Found!</strong>
-                    <p>Found by: ${report.possibleMatch.foundNames}</p>
-                    <p>${report.possibleMatch.foundDescription}</p>
-                    ${report.possibleMatch.image ? `<img src="${report.possibleMatch.image}" width="100" />` : ""}
+                    <p>Found by: ${escapeHtml(report.possibleMatch.foundNames)}</p>
+                    <p>${escapeHtml(report.possibleMatch.foundDescription)}</p>
+                    ${report.possibleMatch.image ? `<img src="${report.possibleMatch.image}" alt="Match" />` : ""}
                 </div>
             `;
         }
 
         card.innerHTML = `
-            <h3>${report.item}</h3>
-            <p>Reported by: ${report.names}</p>
-            <p>${report.lostDescription}</p>
-            ${report.image ? `<img src="${report.image}" width="100" />` : ""}
+            <h3>${escapeHtml(report.item)}</h3>
+            <p class="meta">Reported by: ${escapeHtml(report.names)}</p>
+            <p>${escapeHtml(report.lostDescription)}</p>
+            ${report.image ? `<img src="${report.image}" alt="${escapeHtml(report.item)}" />` : ""}
             ${matchHtml}
         `;
 
@@ -269,8 +416,33 @@ function renderLostReports() {
 }
 
 function renderFoundReports() {
-    const foundReports = JSON.parse(localStorage.getItem("foundReports")) || [];
+    const query = searchInput.value.trim().toLowerCase();
+    const filter = activeFilter;
+    let foundReports = JSON.parse(localStorage.getItem("foundReports")) || [];
+
+    if (filter === "lost") {
+        foundSection.style.display = "none";
+        return;
+    }
+    foundSection.style.display = "";
+
+    foundReports = foundReports.filter(function (report) {
+        if (filter === "matched" && !report.possibleMatch) return false;
+        return matchesSearch(
+            [report.foundItem, report.foundNames, report.foundDescription],
+            query
+        );
+    });
+
+    foundReports = sortReports(
+        foundReports,
+        function (r) { return r.foundItem || ""; },
+        function (r) { return r.id || 0; }
+    );
+
     foundContainer.innerHTML = "";
+    foundCountEl.textContent = foundReports.length;
+    foundEmpty.hidden = foundReports.length > 0;
 
     foundReports.forEach(function (report) {
         const card = document.createElement("div");
@@ -281,23 +453,32 @@ function renderFoundReports() {
             matchHtml = `
                 <div class="matchBox">
                     <strong>Possible Match Found!</strong>
-                    <p>Lost by: ${report.possibleMatch.names}</p>
-                    <p>${report.possibleMatch.lostDescription}</p>
-                    ${report.possibleMatch.image ? `<img src="${report.possibleMatch.image}" width="100" />` : ""}
+                    <p>Lost by: ${escapeHtml(report.possibleMatch.names)}</p>
+                    <p>${escapeHtml(report.possibleMatch.lostDescription)}</p>
+                    ${report.possibleMatch.image ? `<img src="${report.possibleMatch.image}" alt="Match" />` : ""}
                 </div>
             `;
         }
 
         card.innerHTML = `
-            <h3>${report.foundItem}</h3>
-            <p>Found by: ${report.foundNames}</p>
-            <p>${report.foundDescription}</p>
-            ${report.image ? `<img src="${report.image}" width="100" />` : ""}
+            <h3>${escapeHtml(report.foundItem)}</h3>
+            <p class="meta">Found by: ${escapeHtml(report.foundNames)}</p>
+            <p>${escapeHtml(report.foundDescription)}</p>
+            ${report.image ? `<img src="${report.image}" alt="${escapeHtml(report.foundItem)}" />` : ""}
             ${matchHtml}
         `;
+
         foundContainer.appendChild(card);
     });
 }
 
-renderLostReports();
-renderFoundReports();
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+refreshBoard();
