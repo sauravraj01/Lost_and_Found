@@ -60,6 +60,7 @@
                 </button>
                 <div class="profile-dropdown" id="profileDropdown" hidden>
                     <p class="profile-email" id="profileEmail"></p>
+                    <button class="btn-mine" id="mineBtn" type="button">My Reports</button>
                     <button class="btn-logout" id="logoutBtn" type="button">Logout</button>
                 </div>
             </div>
@@ -93,6 +94,10 @@
                         <button class="chip" type="button" data-filter="matched" title="Has match">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                             <span>Match</span>
+                        </button>
+                        <button class="chip" type="button" data-filter="mine" title="My reports">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>Mine</span>
                         </button>
                     </div>
 
@@ -181,6 +186,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="emailjs-config.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

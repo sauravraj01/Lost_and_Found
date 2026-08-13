@@ -1,16 +1,22 @@
-// ==================== Auth / Navbar ====================
+// ==================== Auth guard ====================
 
-const studentName = localStorage.getItem("studentName") || "Guest";
+const studentName = localStorage.getItem("studentName") || "";
 const userEmail = localStorage.getItem("userEmail") || "";
+const userContact = localStorage.getItem("userContact") || "";
+
+if (!userEmail) {
+    window.location.href = "index.html";
+}
+
 const welcomeEl = document.getElementById("welcomeName");
 const navUserEl = document.getElementById("navUser");
 const profileAvatar = document.getElementById("profileAvatar");
 const profileEmail = document.getElementById("profileEmail");
 
-if (welcomeEl) welcomeEl.textContent = studentName;
-if (navUserEl) navUserEl.textContent = studentName;
-if (profileAvatar) profileAvatar.textContent = studentName.charAt(0).toUpperCase();
-if (profileEmail) profileEmail.textContent = userEmail || "Not signed in";
+if (welcomeEl) welcomeEl.textContent = studentName || "User";
+if (navUserEl) navUserEl.textContent = studentName || "User";
+if (profileAvatar) profileAvatar.textContent = (studentName || "U").charAt(0).toUpperCase();
+if (profileEmail) profileEmail.textContent = userEmail;
 
 const profileMenu = document.querySelector(".profile-menu");
 const profileBtn = document.getElementById("profileBtn");
@@ -31,11 +37,21 @@ document.addEventListener("click", function (e) {
     }
 });
 
-document.getElementById("logoutBtn").addEventListener("click", function () {
+document.getElementById("logoutBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userContact");
     localStorage.removeItem("studentName");
-    window.location.href = "index.html";
+
+    window.location.replace("index.html");
+});
+
+document.getElementById("mineBtn").addEventListener("click", function () {
+    profileMenu.classList.remove("open");
+    profileDropdown.hidden = true;
+    setActiveFilter("mine");
 });
 
 // ==================== Theme toggle ====================
@@ -51,7 +67,49 @@ themeToggle.addEventListener("click", function () {
     localStorage.setItem("theme", next);
 });
 
-// ==================== Report modal (Lost / Found tabs) ====================
+// ==================== EmailJS init ====================
+
+if (typeof emailjs !== "undefined" && EMAILJS_CONFIG && EMAILJS_CONFIG.PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+}
+
+function sendMatchEmail(lostReport, foundReport) {
+    if (!lostReport.ownerEmail) return Promise.resolve();
+    if (lostReport.emailNotified) return Promise.resolve();
+
+    const configReady =
+        typeof emailjs !== "undefined" &&
+        EMAILJS_CONFIG &&
+        EMAILJS_CONFIG.PUBLIC_KEY !== "YOUR_PUBLIC_KEY";
+
+    if (!configReady) {
+        console.warn("EmailJS not configured. Skipping email. See emailjs-config.js");
+        lostReport.emailNotified = true;
+        return Promise.resolve();
+    }
+
+    const params = {
+        to_email: lostReport.ownerEmail,
+        to_name: lostReport.names || "Student",
+        item_name: lostReport.item || "your item",
+        found_by: foundReport.foundNames || "someone",
+        found_description: foundReport.foundDescription || "",
+        message:
+            "A possible match was found for your lost item on FindIT. Open the dashboard and check the Match filter."
+    };
+
+    return emailjs
+        .send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, params)
+        .then(function () {
+            lostReport.emailNotified = true;
+            console.log("Match email sent to", lostReport.ownerEmail);
+        })
+        .catch(function (err) {
+            console.error("EmailJS error:", err);
+        });
+}
+
+// ==================== Report modal ====================
 
 const reportModal = document.getElementById("reportModal");
 const reportBtn = document.getElementById("reportBtn");
@@ -63,6 +121,12 @@ const foundPanel = document.getElementById("foundPanel");
 function openReportModal(tab) {
     reportModal.style.display = "flex";
     showReportTab(tab || "lost");
+
+    // Prefill reporter name from session
+    const nameInput = document.getElementById("names");
+    const foundNameInput = document.getElementById("foundNames");
+    if (nameInput && !nameInput.value) nameInput.value = studentName;
+    if (foundNameInput && !foundNameInput.value) foundNameInput.value = studentName;
 }
 
 function closeReportModal() {
@@ -71,12 +135,10 @@ function closeReportModal() {
 
 function showReportTab(tab) {
     const isLost = tab === "lost";
-
     tabLost.classList.toggle("active", isLost);
     tabFound.classList.toggle("active", !isLost);
     tabLost.setAttribute("aria-selected", String(isLost));
     tabFound.setAttribute("aria-selected", String(!isLost));
-
     lostPanel.hidden = !isLost;
     foundPanel.hidden = isLost;
 }
@@ -98,6 +160,7 @@ document.getElementById("reportClose").addEventListener("click", closeReportModa
 reportModal.addEventListener("click", function (e) {
     if (e.target === reportModal) closeReportModal();
 });
+
 // ==================== Helpers ====================
 
 function fileToBase64(file) {
@@ -153,7 +216,8 @@ function linkMatch(lostReport, foundReport) {
         foundNames: foundReport.foundNames,
         foundItem: foundReport.foundItem,
         foundDescription: foundReport.foundDescription,
-        image: foundReport.image
+        image: foundReport.image,
+        ownerEmail: foundReport.ownerEmail || null
     };
 
     foundReport.possibleMatch = {
@@ -161,11 +225,12 @@ function linkMatch(lostReport, foundReport) {
         names: lostReport.names,
         item: lostReport.item,
         lostDescription: lostReport.lostDescription,
-        image: lostReport.image
+        image: lostReport.image,
+        ownerEmail: lostReport.ownerEmail || null
     };
 }
 
-// ==================== Search / Sort / Filter state ====================
+// ==================== Search / Sort / Filter ====================
 
 const searchInput = document.getElementById("searchInput");
 const filterGroup = document.getElementById("filterGroup");
@@ -176,15 +241,18 @@ let activeSort = "newest";
 
 searchInput.addEventListener("input", refreshBoard);
 
+function setActiveFilter(filter) {
+    activeFilter = filter;
+    filterGroup.querySelectorAll(".chip").forEach(function (chip) {
+        chip.classList.toggle("active", chip.dataset.filter === filter);
+    });
+    refreshBoard();
+}
+
 filterGroup.addEventListener("click", function (e) {
     const btn = e.target.closest("[data-filter]");
     if (!btn) return;
-
-    activeFilter = btn.dataset.filter;
-    filterGroup.querySelectorAll(".chip").forEach(function (chip) {
-        chip.classList.toggle("active", chip === btn);
-    });
-    refreshBoard();
+    setActiveFilter(btn.dataset.filter);
 });
 
 sortSelect.addEventListener("change", function () {
@@ -194,8 +262,7 @@ sortSelect.addEventListener("change", function () {
 
 function matchesSearch(textParts, query) {
     if (!query) return true;
-    const haystack = textParts.join(" ").toLowerCase();
-    return haystack.includes(query);
+    return textParts.join(" ").toLowerCase().includes(query);
 }
 
 function sortReports(list, getName, getId) {
@@ -233,7 +300,7 @@ imageInput.addEventListener("change", async function () {
     }
 });
 
-document.getElementById("submit").addEventListener("click", function () {
+document.getElementById("submit").addEventListener("click", async function () {
     const names = document.getElementById("names").value.trim();
     const lostDescription = document.getElementById("lostDescription").value.trim();
     const item = document.getElementById("item").value.trim();
@@ -249,17 +316,22 @@ document.getElementById("submit").addEventListener("click", function () {
         item,
         lostDescription,
         image: currentLostImageBase64,
-        possibleMatch: null
+        possibleMatch: null,
+        ownerEmail: userEmail,
+        ownerContact: userContact,
+        emailNotified: false
     };
 
     let reports = JSON.parse(localStorage.getItem("reports")) || [];
     let foundReportsForCheck = JSON.parse(localStorage.getItem("foundReports")) || [];
     let foundChanged = false;
+    const emailJobs = [];
 
     foundReportsForCheck.forEach(function (existingFound) {
         if (isMatch(report, existingFound)) {
             linkMatch(report, existingFound);
             foundChanged = true;
+            emailJobs.push(sendMatchEmail(report, existingFound));
         }
     });
 
@@ -268,6 +340,14 @@ document.getElementById("submit").addEventListener("click", function () {
 
     if (foundChanged) {
         localStorage.setItem("foundReports", JSON.stringify(foundReportsForCheck));
+    }
+
+    await Promise.all(emailJobs);
+    // re-save after emailNotified may have flipped
+    localStorage.setItem("reports", JSON.stringify(reports));
+
+    if (emailJobs.length) {
+        alert("Possible match found! If EmailJS is configured, a mail was sent to your account email.");
     }
 
     document.getElementById("names").value = "";
@@ -297,7 +377,7 @@ foundImageInput.addEventListener("change", async function () {
     }
 });
 
-document.getElementById("foundSubmit").addEventListener("click", function () {
+document.getElementById("foundSubmit").addEventListener("click", async function () {
     const foundNames = document.getElementById("foundNames").value.trim();
     const foundItem = document.getElementById("foundItem").value.trim();
     const foundDescription = document.getElementById("foundDescription").value.trim();
@@ -313,17 +393,21 @@ document.getElementById("foundSubmit").addEventListener("click", function () {
         foundItem,
         foundDescription,
         image: currentFoundImageBase64,
-        possibleMatch: null
+        possibleMatch: null,
+        ownerEmail: userEmail,
+        ownerContact: userContact
     };
 
     let foundReports = JSON.parse(localStorage.getItem("foundReports")) || [];
     let reports = JSON.parse(localStorage.getItem("reports")) || [];
     let lostChanged = false;
+    const emailJobs = [];
 
     reports.forEach(function (lostReport) {
         if (isMatch(lostReport, foundReport)) {
             linkMatch(lostReport, foundReport);
             lostChanged = true;
+            emailJobs.push(sendMatchEmail(lostReport, foundReport));
         }
     });
 
@@ -331,7 +415,12 @@ document.getElementById("foundSubmit").addEventListener("click", function () {
     localStorage.setItem("foundReports", JSON.stringify(foundReports));
 
     if (lostChanged) {
+        await Promise.all(emailJobs);
         localStorage.setItem("reports", JSON.stringify(reports));
+    }
+
+    if (emailJobs.length) {
+        alert("Matched a lost report! The owner will get an email if EmailJS is set up.");
     }
 
     document.getElementById("foundNames").value = "";
@@ -362,7 +451,6 @@ function renderLostReports() {
     const filter = activeFilter;
     let reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-    // Section visibility from filter
     if (filter === "found") {
         lostSection.style.display = "none";
         return;
@@ -371,6 +459,7 @@ function renderLostReports() {
 
     reports = reports.filter(function (report) {
         if (filter === "matched" && !report.possibleMatch) return false;
+        if (filter === "mine" && report.ownerEmail !== userEmail) return false;
         return matchesSearch(
             [report.item, report.names, report.lostDescription],
             query
@@ -386,11 +475,16 @@ function renderLostReports() {
     container.innerHTML = "";
     lostCountEl.textContent = reports.length;
     lostEmpty.hidden = reports.length > 0;
+    lostEmpty.textContent =
+        filter === "mine"
+            ? "You have not reported any lost items yet."
+            : "No lost items match your search.";
 
     reports.forEach(function (report) {
         const card = document.createElement("div");
         card.classList.add("card");
 
+        const isMine = report.ownerEmail === userEmail;
         let matchHtml = "";
         if (report.possibleMatch) {
             matchHtml = `
@@ -404,7 +498,7 @@ function renderLostReports() {
         }
 
         card.innerHTML = `
-            <h3>${escapeHtml(report.item)}</h3>
+            <h3>${escapeHtml(report.item)}${isMine ? ' <span class="mine-tag">Yours</span>' : ""}</h3>
             <p class="meta">Reported by: ${escapeHtml(report.names)}</p>
             <p>${escapeHtml(report.lostDescription)}</p>
             ${report.image ? `<img src="${report.image}" alt="${escapeHtml(report.item)}" />` : ""}
@@ -428,6 +522,7 @@ function renderFoundReports() {
 
     foundReports = foundReports.filter(function (report) {
         if (filter === "matched" && !report.possibleMatch) return false;
+        if (filter === "mine" && report.ownerEmail !== userEmail) return false;
         return matchesSearch(
             [report.foundItem, report.foundNames, report.foundDescription],
             query
@@ -443,11 +538,16 @@ function renderFoundReports() {
     foundContainer.innerHTML = "";
     foundCountEl.textContent = foundReports.length;
     foundEmpty.hidden = foundReports.length > 0;
+    foundEmpty.textContent =
+        filter === "mine"
+            ? "You have not reported any found items yet."
+            : "No found items match your search.";
 
     foundReports.forEach(function (report) {
         const card = document.createElement("div");
         card.classList.add("card");
 
+        const isMine = report.ownerEmail === userEmail;
         let matchHtml = "";
         if (report.possibleMatch) {
             matchHtml = `
@@ -461,7 +561,7 @@ function renderFoundReports() {
         }
 
         card.innerHTML = `
-            <h3>${escapeHtml(report.foundItem)}</h3>
+            <h3>${escapeHtml(report.foundItem)}${isMine ? ' <span class="mine-tag">Yours</span>' : ""}</h3>
             <p class="meta">Found by: ${escapeHtml(report.foundNames)}</p>
             <p>${escapeHtml(report.foundDescription)}</p>
             ${report.image ? `<img src="${report.image}" alt="${escapeHtml(report.foundItem)}" />` : ""}

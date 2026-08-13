@@ -15,35 +15,62 @@
     </nav>
 
     <main class="container">
-        <section class="left-section">
-            <div class="left-top">
+        <!-- Left: text + image -->
+        <section class="brand-panel">
+            <div class="brand-copy">
                 <h1 id="head1">Lost Something on Campus?</h1>
                 <p id="subhead1">
-                    Sign in to report missing items, browse recent findings,
-                    and reconnect with your belongings through the campus community.
+                    Create an account or sign in to report items, track your posts,
+                    and get an email when a possible match is found.
                 </p>
             </div>
-
-            <div class="left-bottom">
-                <h2 class="form-title">Sign in</h2>
-                <form class="login-form">
-                    <div class="input-group">
-                        <label for="maillogin">Email</label>
-                        <input class="input" id="maillogin" type="email" placeholder="name@mail.jiit.ac.in">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="contactlogin">Contact No.</label>
-                        <input class="input" id="contactlogin" type="tel" placeholder="10-digit number" maxlength="10">
-                    </div>
-
-                    <button class="btn" id="submitbtn" type="button">Sign in</button>
-                </form>
+            <div class="brand-visual">
+                <img src="LnF-Illustration.png" alt="Lost and found illustration">
             </div>
         </section>
 
-        <section class="right-section">
-            <img src="LnF-Illustration.png" alt="Lost and found illustration">
+        <!-- Right: auth form -->
+        <section class="auth-panel">
+            <div class="auth-card">
+                <div class="auth-tabs" role="tablist">
+                    <button type="button" class="auth-tab active" id="tabLogin" role="tab" aria-selected="true">Sign in</button>
+                    <button type="button" class="auth-tab" id="tabSignup" role="tab" aria-selected="false">Sign up</button>
+                </div>
+
+                <form class="login-form" id="loginForm">
+                    <div class="input-group">
+                        <label for="loginEmail">Email</label>
+                        <input class="input" id="loginEmail" type="email" placeholder="name@mail.jiit.ac.in" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="loginPassword">Password</label>
+                        <input class="input" id="loginPassword" type="password" placeholder="Your password" required>
+                    </div>
+                    <p class="form-error" id="loginError" hidden></p>
+                    <button class="btn" id="loginBtn" type="submit">Sign in</button>
+                </form>
+
+                <form class="login-form" id="signupForm" hidden>
+                    <div class="input-group">
+                        <label for="signupName">Full name</label>
+                        <input class="input" id="signupName" type="text" placeholder="Your name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="signupEmail">Email</label>
+                        <input class="input" id="signupEmail" type="email" placeholder="name@mail.jiit.ac.in" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="signupContact">Contact No.</label>
+                        <input class="input" id="signupContact" type="tel" placeholder="10-digit number" maxlength="10" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="signupPassword">Password</label>
+                        <input class="input" id="signupPassword" type="password" placeholder="Min 6 characters" required>
+                    </div>
+                    <p class="form-error" id="signupError" hidden></p>
+                    <button class="btn" id="signupBtn" type="submit">Create account</button>
+                </form>
+            </div>
         </section>
     </main>
 
