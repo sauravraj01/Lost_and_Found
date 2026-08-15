@@ -32,6 +32,8 @@ const loginForm = document.getElementById("loginForm");
 const signupForm = document.getElementById("signupForm");
 const loginError = document.getElementById("loginError");
 const signupError = document.getElementById("signupError");
+const authHeading = document.querySelector(".auth-heading");
+const authSub = document.querySelector(".auth-sub");
 
 function showAuthTab(which) {
     const isLogin = which === "login";
@@ -43,6 +45,13 @@ function showAuthTab(which) {
     signupForm.hidden = isLogin;
     loginError.hidden = true;
     signupError.hidden = true;
+
+    if (authHeading) authHeading.textContent = isLogin ? "Welcome back" : "Create account";
+    if (authSub) {
+        authSub.textContent = isLogin
+            ? "Use your JIIT email to continue."
+            : "Join with your campus email in a minute.";
+    }
 }
 
 tabLogin.addEventListener("click", function () {
@@ -52,6 +61,20 @@ tabLogin.addEventListener("click", function () {
 tabSignup.addEventListener("click", function () {
     showAuthTab("signup");
 });
+
+document.querySelectorAll("[data-auth]").forEach(function (el) {
+    el.addEventListener("click", function () {
+        showAuthTab(el.getAttribute("data-auth"));
+    });
+});
+
+(function setItemStat() {
+    var lost = JSON.parse(localStorage.getItem("reports") || "[]");
+    var found = JSON.parse(localStorage.getItem("foundReports") || "[]");
+    var count = lost.length + found.length;
+    var el = document.getElementById("statCount");
+    if (el) el.textContent = count + "+";
+})();
 
 function showError(el, message) {
     el.textContent = message;

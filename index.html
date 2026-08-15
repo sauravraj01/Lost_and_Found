@@ -3,76 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FindIt | Login</title>
+    <title>FindIT | Campus Lost &amp; Found</title>
     <link rel="stylesheet" href="indexcs.css">
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-brand">
-            <h1>Find<span class="it">IT</span></h1>
+        <a href="#home" class="nav-brand">Find<span class="it">IT</span></a>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#auth">Sign in</a>
         </div>
-        <p class="nav-tagline">Campus Lost &amp; Found</p>
+        <a href="#auth" class="nav-cta" data-auth="signup">Get Started</a>
     </nav>
 
-    <main class="container">
-        <!-- Left: text + image -->
-        <section class="brand-panel">
-            <div class="brand-copy">
-                <h1 id="head1">Lost Something on Campus?</h1>
-                <p id="subhead1">
-                    Create an account or sign in to report items, track your posts,
-                    and get an email when a possible match is found.
-                </p>
+    <section class="hero" id="home">
+        <div class="hero-copy">
+            <p class="badge">JIIT campus lost &amp; found</p>
+            <h1>ONE STOP portal for lost items on campus.</h1>
+            <p class="hero-lead">
+                Report what you lost or found, browse the board, and get an email if a match shows up.
+                Built for JIITians — no posters, no random WhatsApp forwards.
+            </p>
+            <div class="hero-actions">
+                <a href="#auth" class="btn-light" data-auth="login">Sign in</a>
+                <a href="#auth" class="btn-accent" data-auth="signup">Get Started →</a>
             </div>
-            <div class="brand-visual">
-                <img src="LnF-Illustration.png" alt="Lost and found illustration">
-            </div>
-        </section>
+        </div>
 
-        <!-- Right: auth form -->
-        <section class="auth-panel">
-            <div class="auth-card">
-                <div class="auth-tabs" role="tablist">
-                    <button type="button" class="auth-tab active" id="tabLogin" role="tab" aria-selected="true">Sign in</button>
-                    <button type="button" class="auth-tab" id="tabSignup" role="tab" aria-selected="false">Sign up</button>
+        <div class="hero-visual">
+            <img src="LnF-Illustration.png" alt="Students returning a found item on campus">
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="about-top">
+            <h2><span>Everything you need to</span> recover campus items.</h2>
+            <p>
+                FindIT is the lost-and-found board for JIIT. Sign in with your campus email,
+                post an item, and let the board do the rest — including a mail if something
+                looks like a match.
+            </p>
+        </div>
+        <div class="about-grid">
+            <article>
+                <h3>Quick reporting</h3>
+                <p>Submit a lost or found report with a name, description, and an optional photo in one form.</p>
+            </article>
+            <article>
+                <h3>Campus board</h3>
+                <p>Search, filter, and sort every post so you can find the item without scrolling endlessly.</p>
+            </article>
+            <article>
+                <h3>My reports</h3>
+                <p>Open your own posts from the profile menu and keep track of possible matches.</p>
+            </article>
+            <article>
+                <h3>Match email</h3>
+                <p>If a found report looks like your lost item, a mail can be sent to your JIIT inbox.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="points">
+        <ul class="point-list">
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                Report lost or found items with a photo and a short description.
+            </li>
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                Search and filter the campus board by lost, found, matches, or your posts.
+            </li>
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Track only your reports from the profile menu when you need them.
+            </li>
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                Get an email on your JIIT inbox if a found item looks like a match.
+            </li>
+        </ul>
+        <div class="stat">
+            <p class="stat-num" id="statCount">0+</p>
+            <p class="stat-label">Items posted on FindIT</p>
+        </div>
+    </section>
+
+    <section class="auth-section" id="auth">
+        <div class="auth-intro">
+            <h2>Get started</h2>
+            <p>Use your JIIT email to sign in or create an account.</p>
+        </div>
+        <div class="auth-card">
+            <h2 class="auth-heading">Welcome back</h2>
+            <p class="auth-sub">Use your JIIT email to continue.</p>
+
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab active" id="tabLogin" role="tab" aria-selected="true">Sign in</button>
+                <button type="button" class="auth-tab" id="tabSignup" role="tab" aria-selected="false">Sign up</button>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <label for="loginEmail">Email</label>
+                    <input class="input" id="loginEmail" type="email" placeholder="name@mail.jiit.ac.in" required>
                 </div>
+                <div class="input-group">
+                    <label for="loginPassword">Password</label>
+                    <input class="input" id="loginPassword" type="password" placeholder="Your password" required>
+                </div>
+                <p class="form-error" id="loginError" hidden></p>
+                <button class="btn" id="loginBtn" type="submit">Sign in</button>
+            </form>
 
-                <form class="login-form" id="loginForm">
-                    <div class="input-group">
-                        <label for="loginEmail">Email</label>
-                        <input class="input" id="loginEmail" type="email" placeholder="name@mail.jiit.ac.in" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="loginPassword">Password</label>
-                        <input class="input" id="loginPassword" type="password" placeholder="Your password" required>
-                    </div>
-                    <p class="form-error" id="loginError" hidden></p>
-                    <button class="btn" id="loginBtn" type="submit">Sign in</button>
-                </form>
-
-                <form class="login-form" id="signupForm" hidden>
-                    <div class="input-group">
-                        <label for="signupName">Full name</label>
-                        <input class="input" id="signupName" type="text" placeholder="Your name" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="signupEmail">Email</label>
-                        <input class="input" id="signupEmail" type="email" placeholder="name@mail.jiit.ac.in" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="signupContact">Contact No.</label>
-                        <input class="input" id="signupContact" type="tel" placeholder="10-digit number" maxlength="10" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="signupPassword">Password</label>
-                        <input class="input" id="signupPassword" type="password" placeholder="Min 6 characters" required>
-                    </div>
-                    <p class="form-error" id="signupError" hidden></p>
-                    <button class="btn" id="signupBtn" type="submit">Create account</button>
-                </form>
-            </div>
-        </section>
-    </main>
+            <form class="login-form" id="signupForm" hidden>
+                <div class="input-group">
+                    <label for="signupName">Full name</label>
+                    <input class="input" id="signupName" type="text" placeholder="Your name" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupEmail">Email</label>
+                    <input class="input" id="signupEmail" type="email" placeholder="name@mail.jiit.ac.in" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupContact">Contact No.</label>
+                    <input class="input" id="signupContact" type="tel" placeholder="10-digit number" maxlength="10" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupPassword">Password</label>
+                    <input class="input" id="signupPassword" type="password" placeholder="Min 6 characters" required>
+                </div>
+                <p class="form-error" id="signupError" hidden></p>
+                <button class="btn" id="signupBtn" type="submit">Create account</button>
+            </form>
+        </div>
+    </section>
 
     <footer class="footer">
         Made with ♥ for JIITians
