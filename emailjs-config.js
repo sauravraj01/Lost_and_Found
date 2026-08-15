@@ -10,7 +10,7 @@
  * 4. Paste your keys below
  */
 const EMAILJS_CONFIG = {
-    PUBLIC_KEY: "YOUR_PUBLIC_KEY",
-    SERVICE_ID: "YOUR_SERVICE_ID",
+    PUBLIC_KEY: "DAXGSIfxheXd1JD_b",
+    SERVICE_ID: "service_4gwfjzb",
     TEMPLATE_ID: "YOUR_TEMPLATE_ID"
 };

@@ -1,4 +1,4 @@
-// ==================== Auth guard ====================
+/* ---------- NAVBAR ---------- */
 
 const studentName = localStorage.getItem("studentName") || "";
 const userEmail = localStorage.getItem("userEmail") || "";
@@ -40,11 +40,9 @@ document.addEventListener("click", function (e) {
 document.getElementById("logoutBtn").addEventListener("click", function (e) {
     e.preventDefault();
     e.stopPropagation();
-
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userContact");
     localStorage.removeItem("studentName");
-
     window.location.replace("index.html");
 });
 
@@ -53,8 +51,6 @@ document.getElementById("mineBtn").addEventListener("click", function () {
     profileDropdown.hidden = true;
     setActiveFilter("mine");
 });
-
-// ==================== Theme toggle ====================
 
 const themeToggle = document.getElementById("themeToggle");
 const savedTheme = localStorage.getItem("theme") || "light";
@@ -67,49 +63,8 @@ themeToggle.addEventListener("click", function () {
     localStorage.setItem("theme", next);
 });
 
-// ==================== EmailJS init ====================
-
-if (typeof emailjs !== "undefined" && EMAILJS_CONFIG && EMAILJS_CONFIG.PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
-    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-}
-
-function sendMatchEmail(lostReport, foundReport) {
-    if (!lostReport.ownerEmail) return Promise.resolve();
-    if (lostReport.emailNotified) return Promise.resolve();
-
-    const configReady =
-        typeof emailjs !== "undefined" &&
-        EMAILJS_CONFIG &&
-        EMAILJS_CONFIG.PUBLIC_KEY !== "YOUR_PUBLIC_KEY";
-
-    if (!configReady) {
-        console.warn("EmailJS not configured. Skipping email. See emailjs-config.js");
-        lostReport.emailNotified = true;
-        return Promise.resolve();
-    }
-
-    const params = {
-        to_email: lostReport.ownerEmail,
-        to_name: lostReport.names || "Student",
-        item_name: lostReport.item || "your item",
-        found_by: foundReport.foundNames || "someone",
-        found_description: foundReport.foundDescription || "",
-        message:
-            "A possible match was found for your lost item on FindIT. Open the dashboard and check the Match filter."
-    };
-
-    return emailjs
-        .send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, params)
-        .then(function () {
-            lostReport.emailNotified = true;
-            console.log("Match email sent to", lostReport.ownerEmail);
-        })
-        .catch(function (err) {
-            console.error("EmailJS error:", err);
-        });
-}
-
-// ==================== Report modal ====================
+const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", refreshBoard);
 
 const reportModal = document.getElementById("reportModal");
 const reportBtn = document.getElementById("reportBtn");
@@ -122,7 +77,6 @@ function openReportModal(tab) {
     reportModal.style.display = "flex";
     showReportTab(tab || "lost");
 
-    // Prefill reporter name from session
     const nameInput = document.getElementById("names");
     const foundNameInput = document.getElementById("foundNames");
     if (nameInput && !nameInput.value) nameInput.value = studentName;
@@ -161,7 +115,67 @@ reportModal.addEventListener("click", function (e) {
     if (e.target === reportModal) closeReportModal();
 });
 
-// ==================== Helpers ====================
+
+/* ---------- FILTER ---------- */
+
+const filterGroup = document.getElementById("filterGroup");
+const sortSelect = document.getElementById("sortSelect");
+
+let activeFilter = "all";
+let activeSort = "newest";
+
+function setActiveFilter(filter) {
+    activeFilter = filter;
+    filterGroup.querySelectorAll(".chip").forEach(function (chip) {
+        chip.classList.toggle("active", chip.dataset.filter === filter);
+    });
+    refreshBoard();
+}
+
+filterGroup.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+    setActiveFilter(btn.dataset.filter);
+});
+
+sortSelect.addEventListener("change", function () {
+    activeSort = sortSelect.value;
+    refreshBoard();
+});
+
+function matchesSearch(textParts, query) {
+    if (!query) return true;
+    return textParts.join(" ").toLowerCase().includes(query);
+}
+
+function sortReports(list, getName, getId) {
+    const mode = activeSort;
+    const sorted = list.slice();
+
+    sorted.sort(function (a, b) {
+        if (mode === "newest") return getId(b) - getId(a);
+        if (mode === "oldest") return getId(a) - getId(b);
+        if (mode === "az") return getName(a).localeCompare(getName(b));
+        if (mode === "za") return getName(b).localeCompare(getName(a));
+        return 0;
+    });
+
+    return sorted;
+}
+
+function refreshBoard() {
+    renderLostReports();
+    renderFoundReports();
+}
+
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
 
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -230,65 +244,55 @@ function linkMatch(lostReport, foundReport) {
     };
 }
 
-// ==================== Search / Sort / Filter ====================
-
-const searchInput = document.getElementById("searchInput");
-const filterGroup = document.getElementById("filterGroup");
-const sortSelect = document.getElementById("sortSelect");
-
-let activeFilter = "all";
-let activeSort = "newest";
-
-searchInput.addEventListener("input", refreshBoard);
-
-function setActiveFilter(filter) {
-    activeFilter = filter;
-    filterGroup.querySelectorAll(".chip").forEach(function (chip) {
-        chip.classList.toggle("active", chip.dataset.filter === filter);
-    });
-    refreshBoard();
+if (typeof emailjs !== "undefined" && EMAILJS_CONFIG && EMAILJS_CONFIG.PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
 }
 
-filterGroup.addEventListener("click", function (e) {
-    const btn = e.target.closest("[data-filter]");
-    if (!btn) return;
-    setActiveFilter(btn.dataset.filter);
-});
+function sendMatchEmail(lostReport, foundReport) {
+    if (!lostReport.ownerEmail) return Promise.resolve();
+    if (lostReport.emailNotified) return Promise.resolve();
 
-sortSelect.addEventListener("change", function () {
-    activeSort = sortSelect.value;
-    refreshBoard();
-});
+    const configReady =
+        typeof emailjs !== "undefined" &&
+        EMAILJS_CONFIG &&
+        EMAILJS_CONFIG.PUBLIC_KEY !== "YOUR_PUBLIC_KEY";
 
-function matchesSearch(textParts, query) {
-    if (!query) return true;
-    return textParts.join(" ").toLowerCase().includes(query);
+    if (!configReady) {
+        console.warn("EmailJS not configured. Skipping email. See emailjs-config.js");
+        lostReport.emailNotified = true;
+        return Promise.resolve();
+    }
+
+    const params = {
+        to_email: lostReport.ownerEmail,
+        to_name: lostReport.names || "Student",
+        item_name: lostReport.item || "your item",
+        found_by: foundReport.foundNames || "someone",
+        found_description: foundReport.foundDescription || "",
+        message:
+            "A possible match was found for your lost item on FindIT. Open the dashboard and check the Match filter."
+    };
+
+    return emailjs
+        .send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, params)
+        .then(function () {
+            lostReport.emailNotified = true;
+            console.log("Match email sent to", lostReport.ownerEmail);
+        })
+        .catch(function (err) {
+            console.error("EmailJS error:", err);
+        });
 }
 
-function sortReports(list, getName, getId) {
-    const mode = activeSort;
-    const sorted = list.slice();
 
-    sorted.sort(function (a, b) {
-        if (mode === "newest") return getId(b) - getId(a);
-        if (mode === "oldest") return getId(a) - getId(b);
-        if (mode === "az") return getName(a).localeCompare(getName(b));
-        if (mode === "za") return getName(b).localeCompare(getName(a));
-        return 0;
-    });
-
-    return sorted;
-}
-
-function refreshBoard() {
-    renderLostReports();
-    renderFoundReports();
-}
-
-// ====================== LOST ITEM ============================
+/* ---------- LOST ITEMS ---------- */
 
 const imageInput = document.getElementById("image");
 const preview = document.getElementById("preview");
+const container = document.getElementById("reportsContainer");
+const lostSection = document.getElementById("lostSection");
+const lostCountEl = document.getElementById("lostCount");
+const lostEmpty = document.getElementById("lostEmpty");
 let currentLostImageBase64 = null;
 
 imageInput.addEventListener("change", async function () {
@@ -343,7 +347,6 @@ document.getElementById("submit").addEventListener("click", async function () {
     }
 
     await Promise.all(emailJobs);
-    // re-save after emailNotified may have flipped
     localStorage.setItem("reports", JSON.stringify(reports));
 
     if (emailJobs.length) {
@@ -362,10 +365,78 @@ document.getElementById("submit").addEventListener("click", async function () {
     refreshBoard();
 });
 
-// ================= FOUND ITEM =================
+function renderLostReports() {
+    const query = searchInput.value.trim().toLowerCase();
+    const filter = activeFilter;
+    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+    if (filter === "found") {
+        lostSection.style.display = "none";
+        return;
+    }
+    lostSection.style.display = "";
+
+    reports = reports.filter(function (report) {
+        if (filter === "matched" && !report.possibleMatch) return false;
+        if (filter === "mine" && report.ownerEmail !== userEmail) return false;
+        return matchesSearch(
+            [report.item, report.names, report.lostDescription],
+            query
+        );
+    });
+
+    reports = sortReports(
+        reports,
+        function (r) { return r.item || ""; },
+        function (r) { return r.id || 0; }
+    );
+
+    container.innerHTML = "";
+    lostCountEl.textContent = reports.length;
+    lostEmpty.hidden = reports.length > 0;
+    lostEmpty.textContent =
+        filter === "mine"
+            ? "You have not reported any lost items yet."
+            : "No lost items match your search.";
+
+    reports.forEach(function (report) {
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        const isMine = report.ownerEmail === userEmail;
+        let matchHtml = "";
+        if (report.possibleMatch) {
+            matchHtml = `
+                <div class="matchBox">
+                    <strong>Possible Match Found!</strong>
+                    <p>Found by: ${escapeHtml(report.possibleMatch.foundNames)}</p>
+                    <p>${escapeHtml(report.possibleMatch.foundDescription)}</p>
+                    ${report.possibleMatch.image ? `<img src="${report.possibleMatch.image}" alt="Match" />` : ""}
+                </div>
+            `;
+        }
+
+        card.innerHTML = `
+            <h3>${escapeHtml(report.item)}${isMine ? ' <span class="mine-tag">Yours</span>' : ""}</h3>
+            <p class="meta">Reported by: ${escapeHtml(report.names)}</p>
+            <p>${escapeHtml(report.lostDescription)}</p>
+            ${report.image ? `<img src="${report.image}" alt="${escapeHtml(report.item)}" />` : ""}
+            ${matchHtml}
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+
+/* ---------- FOUND ITEMS ---------- */
 
 const foundImageInput = document.getElementById("foundImage");
 const foundPreview = document.getElementById("foundPreview");
+const foundContainer = document.getElementById("foundContainer");
+const foundSection = document.getElementById("foundSection");
+const foundCountEl = document.getElementById("foundCount");
+const foundEmpty = document.getElementById("foundEmpty");
 let currentFoundImageBase64 = null;
 
 foundImageInput.addEventListener("change", async function () {
@@ -435,80 +506,6 @@ document.getElementById("foundSubmit").addEventListener("click", async function 
     refreshBoard();
 });
 
-// ================= RENDER =================
-
-const container = document.getElementById("reportsContainer");
-const foundContainer = document.getElementById("foundContainer");
-const lostSection = document.getElementById("lostSection");
-const foundSection = document.getElementById("foundSection");
-const lostCountEl = document.getElementById("lostCount");
-const foundCountEl = document.getElementById("foundCount");
-const lostEmpty = document.getElementById("lostEmpty");
-const foundEmpty = document.getElementById("foundEmpty");
-
-function renderLostReports() {
-    const query = searchInput.value.trim().toLowerCase();
-    const filter = activeFilter;
-    let reports = JSON.parse(localStorage.getItem("reports")) || [];
-
-    if (filter === "found") {
-        lostSection.style.display = "none";
-        return;
-    }
-    lostSection.style.display = "";
-
-    reports = reports.filter(function (report) {
-        if (filter === "matched" && !report.possibleMatch) return false;
-        if (filter === "mine" && report.ownerEmail !== userEmail) return false;
-        return matchesSearch(
-            [report.item, report.names, report.lostDescription],
-            query
-        );
-    });
-
-    reports = sortReports(
-        reports,
-        function (r) { return r.item || ""; },
-        function (r) { return r.id || 0; }
-    );
-
-    container.innerHTML = "";
-    lostCountEl.textContent = reports.length;
-    lostEmpty.hidden = reports.length > 0;
-    lostEmpty.textContent =
-        filter === "mine"
-            ? "You have not reported any lost items yet."
-            : "No lost items match your search.";
-
-    reports.forEach(function (report) {
-        const card = document.createElement("div");
-        card.classList.add("card");
-
-        const isMine = report.ownerEmail === userEmail;
-        let matchHtml = "";
-        if (report.possibleMatch) {
-            matchHtml = `
-                <div class="matchBox">
-                    <strong>Possible Match Found!</strong>
-                    <p>Found by: ${escapeHtml(report.possibleMatch.foundNames)}</p>
-                    <p>${escapeHtml(report.possibleMatch.foundDescription)}</p>
-                    ${report.possibleMatch.image ? `<img src="${report.possibleMatch.image}" alt="Match" />` : ""}
-                </div>
-            `;
-        }
-
-        card.innerHTML = `
-            <h3>${escapeHtml(report.item)}${isMine ? ' <span class="mine-tag">Yours</span>' : ""}</h3>
-            <p class="meta">Reported by: ${escapeHtml(report.names)}</p>
-            <p>${escapeHtml(report.lostDescription)}</p>
-            ${report.image ? `<img src="${report.image}" alt="${escapeHtml(report.item)}" />` : ""}
-            ${matchHtml}
-        `;
-
-        container.appendChild(card);
-    });
-}
-
 function renderFoundReports() {
     const query = searchInput.value.trim().toLowerCase();
     const filter = activeFilter;
@@ -570,15 +567,6 @@ function renderFoundReports() {
 
         foundContainer.appendChild(card);
     });
-}
-
-function escapeHtml(str) {
-    if (!str) return "";
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
 }
 
 refreshBoard();

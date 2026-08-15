@@ -28,39 +28,31 @@
     --shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
     --navbar: #ffffff;
     --page-bg: #f8fafc;
-    --decor-a: #14b8a6;
-    --decor-b: #38bdf8;
-    --decor-c: #f43f5e;
-    --pattern: rgba(15, 23, 42, 0.04);
     --content-width: min(1080px, calc(100% - 40px));
 }
 
 [data-theme="dark"] {
     --text: #f1f5f9;
-    --text-muted: #94a3b8;
-    --text-soft: #64748b;
-    --surface: #334155;
-    --surface-strong: #3f4f66;
-    --surface-input: #1e293b;
-    --border: #475569;
-    --border-strong: #64748b;
+    --text-muted: #a3a3a3;
+    --text-soft: #737373;
+    --surface: #1a1a1a;
+    --surface-strong: #222222;
+    --surface-input: #111111;
+    --border: #2e2e2e;
+    --border-strong: #404040;
     --accent: #2dd4bf;
     --accent-hover: #5eead4;
     --danger: #fb7185;
     --danger-soft: #3f1d24;
-    --chip: #1e293b;
+    --chip: #111111;
     --chip-active: #0d9488;
     --chip-text-active: #fff;
-    --card: #1e293b;
-    --card-border: #475569;
-    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    --shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-    --navbar: #1e293b;
-    --page-bg: #020617;
-    --decor-a: #14b8a6;
-    --decor-b: #38bdf8;
-    --decor-c: #fb7185;
-    --pattern: rgba(255, 255, 255, 0.035);
+    --card: #1a1a1a;
+    --card-border: #2e2e2e;
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    --shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+    --navbar: #111111;
+    --page-bg: #000000;
     --content-width: min(1080px, calc(100% - 40px));
 }
 
@@ -74,147 +66,7 @@ body {
     transition: color 0.2s, background-color 0.2s;
 }
 
-/* Abstract decorative background */
-.bg-decor {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-    background-color: var(--page-bg);
-    background-image: radial-gradient(var(--pattern) 1.5px, transparent 1.5px);
-    background-size: 20px 20px;
-}
-
-.blob {
-    position: absolute;
-    border-radius: 50%;
-}
-
-.blob-a {
-    width: 320px;
-    height: 320px;
-    top: -80px;
-    left: -60px;
-    background: var(--decor-a);
-    opacity: 0.45;
-}
-
-.blob-b {
-    width: 260px;
-    height: 260px;
-    top: 12%;
-    right: -70px;
-    background: var(--decor-b);
-    opacity: 0.4;
-}
-
-.blob-c {
-    width: 300px;
-    height: 300px;
-    bottom: -90px;
-    left: 30%;
-    background: var(--decor-c);
-    opacity: 0.35;
-}
-
-.blob-d {
-    width: 180px;
-    height: 180px;
-    top: 55%;
-    right: 8%;
-    background: var(--decor-a);
-    opacity: 0.32;
-}
-
-.shape {
-    position: absolute;
-}
-
-.shape-ring {
-    width: 160px;
-    height: 160px;
-    top: 40%;
-    left: 4%;
-    border: 16px solid var(--decor-b);
-    border-radius: 50%;
-    opacity: 0.4;
-}
-
-.shape-ring-sm {
-    width: 90px;
-    height: 90px;
-    top: 22%;
-    left: 18%;
-    border: 10px solid var(--decor-c);
-    border-radius: 50%;
-    opacity: 0.35;
-}
-
-.shape-square {
-    width: 110px;
-    height: 110px;
-    bottom: 16%;
-    right: 6%;
-    background: var(--decor-a);
-    border-radius: 22px;
-    transform: rotate(18deg);
-    opacity: 0.38;
-}
-
-.shape-diamond {
-    width: 70px;
-    height: 70px;
-    top: 70%;
-    left: 12%;
-    background: var(--decor-b);
-    border-radius: 14px;
-    transform: rotate(45deg);
-    opacity: 0.36;
-}
-
-.shape-dots {
-    width: 140px;
-    height: 140px;
-    top: 10%;
-    right: 18%;
-    background-image: radial-gradient(var(--decor-c) 4px, transparent 4px);
-    background-size: 20px 20px;
-    opacity: 0.55;
-}
-
-.shape-dots-b {
-    width: 110px;
-    height: 110px;
-    bottom: 28%;
-    left: 22%;
-    background-image: radial-gradient(var(--decor-a) 4px, transparent 4px);
-    background-size: 18px 18px;
-    opacity: 0.5;
-}
-
-[data-theme="dark"] .blob-a,
-[data-theme="dark"] .blob-b,
-[data-theme="dark"] .blob-c,
-[data-theme="dark"] .blob-d {
-    opacity: 0.28;
-}
-
-[data-theme="dark"] .shape-ring,
-[data-theme="dark"] .shape-ring-sm,
-[data-theme="dark"] .shape-square,
-[data-theme="dark"] .shape-diamond {
-    opacity: 0.3;
-}
-
-[data-theme="dark"] .shape-dots,
-[data-theme="dark"] .shape-dots-b {
-    opacity: 0.4;
-}
-
-.navbar,
-.page,
-.modal1 {
+.page {
     position: relative;
     z-index: 1;
 }
@@ -741,7 +593,7 @@ body {
     background: #0a0f1ccc;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 300;
     padding: 20px;
 }
 
